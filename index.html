@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>রাশিফল অ্যাপ</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap');
+
+    body {
+      font-family: 'Noto Sans Bengali', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 55%, #fad0c4 100%);
+      text-align: center;
+      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+      color: #4a4a4a;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 30px;
+      border-radius: 15px;
+      background: #ffffffdd; /* হালকা সাদা ব্যাকগ্রাউন্ড, একটু ট্রান্সপারেন্ট */
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #b33030;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    input, select, button {
+      padding: 12px 15px;
+      margin: 12px 0;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #ff7b7b;
+      box-shadow: 0 0 5px #ff7b7baa;
+    }
+    button {
+      background-color: #ff6666;
+      color: white;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      max-width: 400px;
+    }
+    button:hover {
+      background-color: #e65050;
+    }
+    .result {
+      margin-top: 30px;
+      text-align: left;
+    }
+    #preview {
+      max-width: 150px;
+      margin-top: 15px;
+      border-radius: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    #message {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-top: 15px;
+      color: #7a1c1c;
+      text-align: center;
+    }
+    #personality {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      line-height: 1.5;
+      color: #333;
+      text-align: justify;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 20px;
+    }
+    ul li {
+      background: #fff0f0;
+      margin: 7px 0;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #4a4a4a;
+      box-shadow: 0 1px 5px #ffbbbbaa;
+    }
+
+    @media(max-width: 650px) {
+      input, button {
+        width: 100%;
+      }
+      .container {
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>রাশিফল জানুন</h1>
+    <form id="horoscopeForm">
+      <input type="text" id="name" placeholder="আপনার নাম" required />
+      <input type="date" id="birthdate" required />
+      <input type="file" id="photo" accept="image/*" />
+      <button type="submit">রাশি ফল দেখুন</button>
+    </form>
+
+    <div id="result" class="result">
+      <img id="preview" src="" alt="ছবি" style="display:none;" />
+      <p id="message"></p>
+      <p id="personality"></p>
+      <ul id="daily"></ul>
+    </div>
+  </div>
+
+  <script>
+    const zodiacData = {
+      "মেষ (Aries)": {
+        personality: "উদ্যমী, নেতৃত্বপ্রিয় ও আত্মবিশ্বাসী।",
+        daily: [
+          "আজ আপনার সৃজনশীলতা প্রকাশ পাবে।",
+          "বন্ধুর সহায়তায় একটি নতুন সুযোগ পেতে পারেন।",
+          "অর্থনৈতিক দিক থেকে আজ শুভ।",
+          "ভ্রমণের পরিকল্পনা হতে পারে।",
+          "পরিবারের সঙ্গে ভালো সময় কাটবে।",
+          "জীবনসঙ্গীর সঙ্গে সম্পর্ক আরও মজবুত হবে।"
+        ]
+      },
+      "বৃষ (Taurus)": {
+        personality: "ধৈর্যশীল, নির্ভরযোগ্য এবং সুন্দর জিনিসের প্রতি আগ্রহী।",
+        daily: [
+          "অপরিচিতদের বিশ্বাস করতে সাবধান থাকুন।",
+          "আত্মীয়র সঙ্গে ভুল বোঝাবুঝি হতে পারে।",
+          "আজ আর্থিক লেনদেনে সচেতন থাকুন।",
+          "নতুন কিছু শিখতে আগ্রহ থাকবে।",
+          "শরীরচর্চা করুন, স্বাস্থ্যের উন্নতি হবে।",
+          "ব্যবসায় লাভের সম্ভাবনা আছে।"
+        ]
+      },
+      "মিথুন (Gemini)": {
+        personality: "চঞ্চল, সামাজিক এবং জ্ঞানপিপাসু।",
+        daily: [
+          "বন্ধুদের সঙ্গে সময় কাটানো শুভ।",
+          "আজ নতুন আইডিয়া মাথায় আসতে পারে।",
+          "কারো কাছ থেকে সাহায্য পেতে পারেন।",
+          "ভবিষ্যতের পরিকল্পনায় উন্নতি হবে।",
+          "ভ্রমণ আনন্দদায়ক হবে।",
+          "আজ নিজের প্রতি আস্থা বাড়বে।"
+        ]
+      },
+      "কর্কট (Cancer)": {
+        personality: "সংবেদনশীল, পারিবারিক ও রক্ষনশীল।",
+        daily: [
+          "পরিবারে সুখবর আসতে পারে।",
+          "নিজের অনুভূতি প্রকাশ করুন।",
+          "কারো উপকারে আসতে পারবেন।",
+          "পেশাগত দিক থেকে প্রশংসা পাবেন।",
+          "ঘরোয়া পরিবেশ শান্ত থাকবে।",
+          "পুরোনো বন্ধুর সাথে যোগাযোগ হতে পারে।"
+        ]
+      },
+      "সিংহ (Leo)": {
+        personality: "আত্মবিশ্বাসী, নাটকীয় এবং নেতৃত্বগুণে ভরপুর।",
+        daily: [
+          "আজ নিজের প্রতিভা দেখানোর সুযোগ পাবেন।",
+          "কর্মক্ষেত্রে উন্নতির সম্ভাবনা আছে।",
+          "প্রেমের সম্পর্কে অগ্রগতি হবে।",
+          "নেতৃত্ব প্রদর্শনের সুযোগ পাবেন।",
+          "সাহসী সিদ্ধান্ত নিন।",
+          "আত্মসম্মান বজায় থাকবে।"
+        ]
+      },
+      "কন্যা (Virgo)": {
+        personality: "বিশ্লেষণী, পরিশ্রমী এবং বিশুদ্ধতার প্রতি আগ্রহী।",
+        daily: [
+          "আজ কাজের মধ্যে মনযোগ থাকবে।",
+          "স্বাস্থ্য নিয়ে একটু সাবধান থাকুন।",
+          "বিনিয়োগে লাভের সম্ভাবনা।",
+          "পরিবারের দায়িত্ব নিতে হতে পারে।",
+          "কোনো পুরোনো ভুল ঠিক করতে পারবেন।",
+          "নিজের দক্ষতা প্রমাণ করতে পারবেন।"
+        ]
+      },
+      "তুলা (Libra)": {
+        personality: "সৌন্দর্যপ্রিয়, ভারসাম্যপূর্ণ এবং সম্পর্কনির্ভর।",
+        daily: [
+          "আজ সম্পর্ক উন্নয়নের দিন।",
+          "শান্তভাবে সমস্যা মোকাবিলা করুন।",
+          "আবেগ নিয়ন্ত্রণে রাখুন।",
+          "ব্যক্তিত্ব অন্যকে আকর্ষণ করবে।",
+          "নতুন বন্ধুত্ব হতে পারে।",
+          "কোনো চুক্তি করতে পারেন।"
+        ]
+      },
+      "বৃশ্চিক (Scorpio)": {
+        personality: "গভীর, আবেগপ্রবণ ও দৃঢ় সংকল্পের অধিকারী।",
+        daily: [
+          "আত্মবিশ্বাসে আজ ভরপুর থাকবেন।",
+          "কোনো রহস্য উদঘাটন করতে পারেন।",
+          "আজকের সিদ্ধান্ত গুরুত্বপূর্ণ হবে।",
+          "ব্যক্তিগত সম্পর্কে গভীরতা আসবে।",
+          "অর্থনীতি উন্নতির দিকে যাবে।",
+          "নিজের অনুভূতি প্রকাশ করুন।"
+        ]
+      },
+      "ধনু (Sagittarius)": {
+        personality: "আদর্শবাদী, স্বাধীনচেতা ও অভিযাত্রাপ্রিয়।",
+        daily: [
+          "আজ ভ্রমণ আনন্দদায়ক হবে।",
+          "কোনো নতুন কাজ শুরু হতে পারে।",
+          "জ্ঞানচর্চায় আগ্রহ বাড়বে।",
+          "আত্মউন্নয়নে দিন ব্যয় করুন।",
+          "বড় সিদ্ধান্তে সফলতা আসবে।",
+          "ভবিষ্যতের পরিকল্পনায় উন্নতি হবে।"
+        ]
+      },
+      "মকর (Capricorn)": {
+        personality: "ব্যবহারিক, পরিশ্রমী এবং লক্ষ্যনিষ্ঠ।",
+        daily: [
+          "কঠোর পরিশ্রম আজ সাফল্য আনবে।",
+          "পরিবারে দায়িত্ব বাড়তে পারে।",
+          "কর্মক্ষেত্রে বড় সুযোগ আসবে।",
+          "আর্থিক দিক মজবুত হবে।",
+          "পরিকল্পনায় স্থায়িত্ব থাকবে।",
+          "কারো সহযোগিতায় উপকৃত হবেন।"
+        ]
+      },
+      "কুম্ভ (Aquarius)": {
+        personality: "উদ্ভাবনী, চিন্তাশীল এবং মানবপ্রেমী।",
+        daily: [
+          "আজ নতুন কিছু শিখতে পারেন।",
+          "বন্ধুদের কাছ থেকে ভালো পরামর্শ পাবেন।",
+          "সমাজসেবায় যুক্ত হোন।",
+          "বুদ্ধির দ্বারা সমস্যা সমাধান করুন।",
+          "সৃজনশীল কাজের প্রশংসা পাবেন।",
+          "নিজস্ব চিন্তায় কাজ করুন।"
+        ]
+      },
+      "মীন (Pisces)": {
+        personality: "স্বপ্নদ্রষ্টা, সহানুভূতিশীল এবং কল্পনাপ্রবণ।",
+        daily: [
+          "আজ আবেগ বেশি থাকবে।",
+          "সঙ্গীত বা শিল্পে মন যাবে।",
+          "পরোপকারে আনন্দ পাবেন।",
+          "আধ্যাত্মিকতার দিকে আকর্ষণ থাকবে।",
+          "ঘুম ও বিশ্রাম দরকার হতে পারে।",
+          "কথাবার্তায় নম্রতা বজায় রাখুন।"
+        ]
+      }
+    };
+
+    function getZodiacSign(dateStr) {
+      const date = new Date(dateStr);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "মেষ (Aries)";
+      if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "বৃষ (Taurus)";
+      if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "মিথুন (Gemini)";
+      if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "কর্কট (Cancer)";
+      if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return "সিংহ (Leo)";
+      if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return "কন্যা (Virgo)";
+      if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "তুলা (Libra)";
+      if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return "বৃশ্চিক (Scorpio)";
+      if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "ধনু (Sagittarius)";
+      if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "মকর (Capricorn)";
+      if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "কুম্ভ (Aquarius)";
+      if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return "মীন (Pisces)";
+    }
+
+    document.getElementById("horoscopeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const birthdate = document.getElementById("birthdate").value;
+      const photo = document.getElementById("photo").files[0];
+
+      if (!birthdate) {
+        alert("অনুগ্রহ করে জন্ম তারিখ দিন।");
+        return;
+      }
+
+      const zodiac = getZodiacSign(birthdate);
+      const info = zodiacData[zodiac];
+
+      if (!info) {
+        alert("দুঃখিত, রাশি নির্ণয় করা যাচ্ছে না।");
+        return;
+      }
+
+      document.getElementById("message").textContent = `${name} (${zodiac})`;
+      document.getElementById("personality").textContent = `ব্যক্তিত্ব: ${info.personality}`;
+
+      const ul = document.getElementById("daily");
+      ul.innerHTML = "";
+      info.daily.forEach(prediction => {
+        const li = document.createElement("li");
+        li.textContent = prediction;
+        ul.appendChild(li);
+      });
+
+      const preview = document.getElementById("preview");
+      if (photo) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(photo);
+      } else {
+        preview.src = "";
+        preview.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
